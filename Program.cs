@@ -1,31 +1,77 @@
-﻿namespace AVL;
+﻿namespace BinaryTree;
 class Program
 {
     public static void Main(string[] args)
     {
         Console.Clear();
 
-        var test2 = new TreeAVL(20, null);
+        var test2 = new ABBNode<int>(20, null);
+        var binary = new BinaryTree<int>(test2);
+        binary.Insert(15);
+        binary.Insert(30);
+        binary.Insert(10);
+        binary.Insert(18);
+        binary.Insert(27);
+        binary.Insert(40);
+        binary.Insert(8);
+        binary.Insert(12);
+        binary.Insert(17);
+        binary.Insert(19);
+        binary.Insert(25);
+        binary.Insert(29);
+        binary.Insert(37);
+        binary.Insert(45);
 
-        test2.TreeLeft(16);
-        test2.TreeRight(30);
-        test2.Left.TreeLeft(10);
-        test2.Left.TreeRight(18);
-        test2.Right.TreeLeft(27);
-        test2.Right.TreeRight(40);
-        test2.Left.Left.TreeLeft(8);
-        test2.Left.Left.TreeRight(12);
-        test2.Left.Right.TreeLeft(17);
-        test2.Left.Right.TreeRight(19);
-        test2.Right.Left.TreeLeft(25);
-        test2.Right.Left.TreeRight(29);
-        test2.Right.Right.TreeLeft(37);
-        test2.Right.Right.TreeRight(45);
 
-        var fact = new Factory();
-        fact.Print(test2);
-        fact.Delete(30,test2);
-        fact.Print(test2);
+
+
+        Random x = new Random();
+        var rand = x.Next(1,50);
+
+        // binary.Print();
+
+
+
+
+
+        /* #region TEST_INSERT
+        binary.Print();
+        System.Console.WriteLine("El valor a intentar insertar será: "+ rand);
+        try
+        {
+            binary.Insert(rand);
+            binary.Print();
+        }
+        catch 
+        {
+            System.Console.WriteLine("Ya existe ese valor");
+        }
+        #endregion */
+
+        /* #region TEST_FIND
+        binary.Print();
+        System.Console.WriteLine("El nodo a buscar es: "+rand);
+        var test = binary.Find_Node(rand);
+        if(test is not null) System.Console.WriteLine("Sí contiene al nodo: "+ test.Key);
+        else System.Console.WriteLine("No lo contiene");
+
+
+        #endregion */
+        
+        #region TEST_Remove
+        binary.Print();
+        System.Console.WriteLine("El nodo a remover es: "+rand);
+        if(!(binary.Find_Node(rand) is null)) System.Console.WriteLine("Sí lo contiene");
+        else System.Console.WriteLine("No lo contiene");
+        binary.Remove_Node(rand);
+        System.Console.WriteLine("Everything OK");
+        binary.Print();
+
+
+        #endregion
+
+
+
 
     }
     

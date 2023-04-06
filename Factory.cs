@@ -1,66 +1,198 @@
-using System;
-using System.Collections.Generic;
+namespace BinaryTree;
+public class BinaryTree<TKey> where TKey : IComparable<TKey>{
+    public ABBNode<TKey> Root;
 
-namespace AVL;
-/// <summary>All the operations in the TreeAVL </summary>
-public class Factory
-{
-    public void InOrder(TreeAVL root  ){
-        if(root.Left is not null) InOrder(root.Left);
-        System.Console.WriteLine(root);
-        if(root.Right is not null) InOrder(root.Right);
+    public BinaryTree(){}
+    public BinaryTree(ABBNode<TKey> root)
+    {
+        Root = root;
     }
-    public bool Exists(int value_find, TreeAVL root){
-        var n = Find_Node(value_find, root);
-        if(n is not null && n.Value == value_find) return true;
-        else return false;
+
+    public void Insert(TKey key){
+        Root = Insert(key,Root);
     }
-    public TreeAVL Find_Node(int value_find, TreeAVL root){
-        if(root==null) return null;
-        if(root.Value == value_find) return root;
-        if(value_find<root.Value){
-            root = root.Left;
-            return Find_Node(value_find, root);
-        }
-        if(value_find>root.Value){
-            root=root.Right;
-            return Find_Node(value_find, root);
-        }
-        return null;
-    }
-    public bool Insert(int value_find, TreeAVL root){
-        var n = Find_Node(value_find, root);
-        if(n is not null && n.Value==value_find) {
-            return false;
+    private ABBNode<TKey> Insert(TKey key, ABBNode<TKey> node){
+        if(node is null) node = new ABBNode<TKey>(key, null);
+        else{
+            if(key.CompareTo(node.Key)==0) throw new Exception("This node already exists");
+            if(key.CompareTo(node.Key)<0){
+                node.LChild = Insert(key, node.LChild);
+            }else{
+                node.RChild = Insert(key, node.RChild);
             }
-        if(root.Value < value_find){
-            if(root.Right == null){
-                root.TreeRight(value_find);
+        }
+        return node;
+    }
+    public ABBNode<TKey> Find_Node(TKey key) => Find_Node(key, Root );
+    private ABBNode<TKey> Find_Node(TKey key, ABBNode<TKey> node){
+        if(key.CompareTo(node.Key)==0) return node;
+        if(key.CompareTo(node.Key)<0){
+            if(node.LChild is null) return null;
+            return Find_Node(key, node.LChild);
+        }else{
+            if(node.RChild is null) return null;
+            return Find_Node(key, node.RChild);
+        }
+    }
+    public void InOrder()=> InOrder(Root);
+    private void InOrder(ABBNode<TKey> node){
+        if(node.LChild is not null) InOrder(node.LChild);
+        System.Console.WriteLine(node.Key);
+        if(node.RChild is not null) InOrder(node.RChild);
+    }
+    public ABBNode<TKey> Max_Value() => Max_Value_Node(Root);
+    public ABBNode<TKey> Min_Value() => Min_Value_Node(Root);
+
+    private ABBNode<TKey> Max_Value_Node(ABBNode<TKey> root){
+        if(root.RChild == null) return root;
+        return Max_Value_Node(root.RChild);
+    }
+    private ABBNode<TKey> Min_Value_Node(ABBNode<TKey> root){
+        if(root.LChild == null) return root;
+        return Min_Value_Node(root.LChild);
+    }
+    public bool Remove_Node(TKey key) => Remove_Node(key, Root);
+
+    private bool Remove_Node(TKey key, ABBNode<TKey> root){   // ME QUEDE TRABAJANDO AQUI
+        //This is a simplistic delete implementation, 
+        //it could improve knowing the levels and the number of children of each node
+        var node = Find_Node(key, root);
+        if(root is null || root.Parent is null) return false;
+        var parent = root.Parent;
+        if(parent.LChild == node){
+            
+            // if node is the LChild child
+            if(node.IsLeaf){
+                // if is leaf is trivial
+                parent.LChild = null;
                 return true;
             }
-            root = root.Right;
-            Insert(value_find,root);
-        }
-        if(root.Value > value_find){
-            if(root.Left == null){
-                root.TreeLeft(value_find);
+            if(node.LChild == null){
+                // if the node to eliminate has no LChild child 
+                parent.LChild = node.RChild;
+                node.RChild.Parent = parent;
                 return true;
             }
-            root = root.Left;
-            Insert(value_find,root);
+            if(node.RChild == null){
+                // if the node to eliminate has no RChild child 
+                parent.LChild = node.LChild;
+                node.LChild.Parent = parent;
+                return true;
+            }
+            var newnode = Max_Value_Node(node.LChild);
+            node.Key = newnode.Key;
+            if(newnode.Parent.Key.CompareTo(node.Key)!=0 ){
+                // act the reference
+                newnode.Parent.RChild = null;
+            }
+            return true;
+        }else{
+            // if node is the RChild child
+            if(node.IsLeaf){
+                // if is leaf is trivial
+                parent.RChild = null;
+                return true;
+            }
+            if(node.LChild == null){
+                // if the node to eliminate has no LChild child 
+
+                parent.RChild = node.RChild;
+                node.RChild.Parent = parent;
+                return true;
+            }
+            if(node.RChild == null){
+                // if the node to eliminate has no RChild child 
+                parent.RChild = node.LChild;
+                node.LChild.Parent = parent;
+                return true;
+            }
+            var newnode = Max_Value_Node(node.LChild);
+            node.Key = newnode.Key;
+            if(newnode.Parent.Key.CompareTo(node.Key)!=0 ){
+                // act the reference
+                newnode.Parent.RChild = null;
+            }
+            return true;
         }
-        return false;
-        
-    }
-    public void Print(TreeAVL  root, string textFormat = "0", int spacing = 2, int topMargin = 0, int leftMargin = 1)
+    } 
+
+    #region REMOVE_TEST
+     /* 
+    private ABBNode<TKey> Remove_Node(TKey key,ABBNode<TKey> node)
+        {
+            if (node == null) return null;
+            
+            if (key.CompareTo(node.Key) < 0)
+            {
+                if (node.LChild == null) return node;
+                
+                node.LChild = Remove_Node(key, node.LChild);
+            }
+            else if (key.CompareTo(node.Key) > 0)
+            {
+                if (node.RChild == null) return node;
+                
+                node.RChild = Remove_Node(key, node.RChild);
+            }
+            else if (key.CompareTo(node.Key) == 0)
+            {
+                var findNode = Remove_Node(key,node.LChild);
+
+                node = Move(node, findNode);
+            }
+            
+
+            return node;
+        }
+    private ABBNode<TKey> Move(ABBNode<TKey> node, ABBNode<TKey> findNode)
+        {
+            ABBNode<TKey> moveNode;
+
+            if (findNode != null)
+            {
+                if (findNode.RChild != null)
+                {
+                    moveNode = findNode.RChild;
+
+                    findNode.RChild = null;
+                }
+                else
+                {
+                    findNode.LChild = null;
+
+                    moveNode = findNode;
+                }
+                
+                if (node.LChild != moveNode) moveNode.LChild = node.LChild;
+
+                if (node.RChild != moveNode) moveNode.RChild = node.RChild;
+            }
+            else
+            {
+                moveNode = null;
+            }
+
+            node.LChild = null;
+
+            node.RChild = null;
+
+            node.Key = default(TKey);
+
+            return moveNode;
+        }
+     */
+    #endregion //ENDTEST
+    public void Print() => Print(Root);
+    private void Print(ABBNode<TKey>  root, string textFormat = "0", int spacing = 2, int topMargin = 0, int leftMargin = 1)
     {
         if (root == null) return;
         int rootTop = Console.CursorTop + topMargin;
-        var last = new List<NodeInfo>();
+        var last = new List<NodeInfo<TKey>>();
         var next = root;
         for (int level = 0; next != null; level++)
         {
-            var item = new NodeInfo { Node = next, Text = next.Value.ToString(textFormat) };
+            var item = new NodeInfo<TKey>(next, next.Key.ToString());
+            // var item = new NodeInfo { Node = next, Text = next.Key.ToString(textFormat) };
             if (level < last.Count)
             {
                 item.StartPos = last[level].EndPos + spacing;
@@ -74,7 +206,7 @@ public class Factory
             if (level > 0)
             {
                 item.Parent = last[level - 1];
-                if (next == item.Parent.Node.Left)
+                if (next == item.Parent.Node.LChild)
                 {
                     item.Parent.Left = item;
                     item.EndPos = Math.Max(item.EndPos, item.Parent.StartPos - 1);
@@ -85,26 +217,26 @@ public class Factory
                     item.StartPos = Math.Max(item.StartPos, item.Parent.EndPos + 1);
                 }
             }
-            next = next.Left ?? next.Right;
+            next = next.LChild ?? next.RChild;
             for (; next == null; item = item.Parent)
             {
                 int top = rootTop + 2 * level;
-                Print(item.Text, top, item.StartPos);
+                Prints(item.Text, top, item.StartPos);
                 if (item.Left != null)
                 {
-                    Print("/", top + 1, item.Left.EndPos);
-                    Print("_", top, item.Left.EndPos + 1, item.StartPos);
+                    Prints("/", top + 1, item.Left.EndPos);
+                    Prints("_", top, item.Left.EndPos + 1, item.StartPos);
                 }
                 if (item.Right != null)
                 {
-                    Print("_", top, item.EndPos, item.Right.StartPos - 1);
-                    Print("\\", top + 1, item.Right.StartPos - 1);
+                    Prints("_", top, item.EndPos, item.Right.StartPos - 1);
+                    Prints("\\", top + 1, item.Right.StartPos - 1);
                 }
                 if (--level < 0) break;
                 if (item == item.Parent.Left)
                 {
                     item.Parent.StartPos = item.EndPos + 1;
-                    next = item.Parent.Node.Right;
+                    next = item.Parent.Node.RChild;
                 }
                 else
                 {
@@ -117,82 +249,10 @@ public class Factory
         }
         Console.SetCursorPosition(0, rootTop + 2 * last.Count - 1);
     }
-    private void Print(string s, int top, int left, int right = -1)
+    private void Prints(string s, int top, int left, int right = -1)
     {
         Console.SetCursorPosition(left, top);
         if (right < 0) right = left + s.Length;
         while (Console.CursorLeft < right) Console.Write(s);
-    }
-    public TreeAVL Max_Value_Node(TreeAVL root){
-        if(root.Right == null) return root;
-        return Max_Value_Node(root.Right);
-    }
-    public TreeAVL Min_Value_Node(TreeAVL root){
-        if(root.Left == null) return root;
-        return Min_Value_Node(root.Left);
-    }
-    public bool Delete(int value_find, TreeAVL root){
-        //This is a simplistic delete implementation, 
-        //it could improve knowing the levels and the number of children of each node
-        var node = Find_Node(value_find, root);
-        if(node is null) return false;
-        if(node.Parent is null) return false;
-        var parent = node.Parent;
-        if(parent.Left == node){
-            
-            // if node is the left child
-            if(node.IsLeaf){
-                // if is leaf is trivial
-                parent.Left = null;
-                return true;
-            }
-            if(node.Left == null){
-                // if the node to eliminate has no left child 
-                parent.Left = node.Right;
-                node.Right.Parent = parent;
-                return true;
-            }
-            if(node.Right == null){
-                // if the node to eliminate has no right child 
-                parent.Left = node.Left;
-                node.Left.Parent = parent;
-                return true;
-            }
-            var newnode = Max_Value_Node(node.Left);
-            node.Value = newnode.Value;
-            if(newnode.Parent.Value!= node.Value){
-                // act the reference
-                newnode.Parent.Right = null;
-            }
-            return true;
-        }else{
-            // if node is the right child
-            if(node.IsLeaf){
-                // if is leaf is trivial
-                parent.Right = null;
-                return true;
-            }
-            if(node.Left == null){
-                // if the node to eliminate has no left child 
-
-                parent.Right = node.Right;
-                node.Right.Parent = parent;
-                return true;
-            }
-            if(node.Right == null){
-                // if the node to eliminate has no right child 
-                parent.Right = node.Left;
-                node.Left.Parent = parent;
-                return true;
-            }
-            var newnode = Max_Value_Node(node.Left);
-            node.Value = newnode.Value;
-            if(newnode.Parent.Value!= node.Value){
-                // act the reference
-                newnode.Parent.Right = null;
-            }
-            return true;
-        }
-        return false;
     }
 }
