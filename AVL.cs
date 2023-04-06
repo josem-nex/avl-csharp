@@ -1,15 +1,15 @@
-namespace BinaryTree;
+namespace AVLTree;
 
-public class ABBNode<TKey> where TKey : IComparable<TKey>{
+public class AVLNode<TKey> where TKey : IComparable<TKey>{
     /// <summary>The main value of the node </summary>
     public TKey Key {get; set;}
-    public ABBNode(TKey key, ABBNode<TKey> parent){
+    public AVLNode(TKey key, AVLNode<TKey> parent){
         Parent = parent;
         Key = key;
         LChild = null;
         RChild = null;
     }
-    public ABBNode(TKey key, ABBNode<TKey> lChild, ABBNode<TKey> rChild, ABBNode<TKey> parent){
+    public AVLNode(TKey key, AVLNode<TKey> lChild, AVLNode<TKey> rChild, AVLNode<TKey> parent){
         RChild = rChild;
         LChild = lChild;
         Key = key;
@@ -17,14 +17,14 @@ public class ABBNode<TKey> where TKey : IComparable<TKey>{
     }
     public override string ToString() => Key.ToString();
     /// <summary>If it is the root node then the parent is null.</summary>
-    public ABBNode<TKey> Parent {get; set;} 
-    public ABBNode<TKey> LChild {get; set;}
-    public ABBNode<TKey> RChild {get; set;}
+    public AVLNode<TKey> Parent {get; set;} 
+    public AVLNode<TKey> LChild {get; set;}
+    public AVLNode<TKey> RChild {get; set;}
     public void TreeLeft(TKey key){
-        this.LChild = new ABBNode<TKey>(key, this);
+        this.LChild = new AVLNode<TKey>(key, this);
     }
     public void TreeRight(TKey key){
-        this.RChild = new ABBNode<TKey>(key, this);
+        this.RChild = new AVLNode<TKey>(key, this);
     }
     
     /// <summary>Is true if the node is leaf</summary>

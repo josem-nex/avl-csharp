@@ -1,9 +1,9 @@
-namespace BinaryTree;
-public class BinaryTree<TKey> where TKey : IComparable<TKey>{
-    public ABBNode<TKey> Root;
+namespace AVLTree;
+public class AVLTree<TKey> where TKey : IComparable<TKey>{
+    public AVLNode<TKey> Root;
 
-    public BinaryTree(){}
-    public BinaryTree(ABBNode<TKey> root)
+    public AVLTree(){}
+    public AVLTree(AVLNode<TKey> root)
     {
         Root = root;
     }
@@ -11,8 +11,8 @@ public class BinaryTree<TKey> where TKey : IComparable<TKey>{
     public void Insert(TKey key){
         Root = Insert(key,Root);
     }
-    private ABBNode<TKey> Insert(TKey key, ABBNode<TKey> node){
-        if(node is null) node = new ABBNode<TKey>(key, null);
+    private AVLNode<TKey> Insert(TKey key, AVLNode<TKey> node){
+        if(node is null) node = new AVLNode<TKey>(key, null);
         else{
             if(key.CompareTo(node.Key)==0) throw new Exception("This node already exists");
             if(key.CompareTo(node.Key)<0){
@@ -23,8 +23,8 @@ public class BinaryTree<TKey> where TKey : IComparable<TKey>{
         }
         return node;
     }
-    public ABBNode<TKey> Find_Node(TKey key) => Find_Node(key, Root );
-    private ABBNode<TKey> Find_Node(TKey key, ABBNode<TKey> node){
+    public AVLNode<TKey> Find_Node(TKey key) => Find_Node(key, Root );
+    private AVLNode<TKey> Find_Node(TKey key, AVLNode<TKey> node){
         if(key.CompareTo(node.Key)==0) return node;
         if(key.CompareTo(node.Key)<0){
             if(node.LChild is null) return null;
@@ -35,25 +35,25 @@ public class BinaryTree<TKey> where TKey : IComparable<TKey>{
         }
     }
     public void InOrder()=> InOrder(Root);
-    private void InOrder(ABBNode<TKey> node){
+    private void InOrder(AVLNode<TKey> node){
         if(node.LChild is not null) InOrder(node.LChild);
         System.Console.WriteLine(node.Key);
         if(node.RChild is not null) InOrder(node.RChild);
     }
-    public ABBNode<TKey> Max_Value() => Max_Value_Node(Root);
-    public ABBNode<TKey> Min_Value() => Min_Value_Node(Root);
+    public AVLNode<TKey> Max_Value() => Max_Value_Node(Root);
+    public AVLNode<TKey> Min_Value() => Min_Value_Node(Root);
 
-    private ABBNode<TKey> Max_Value_Node(ABBNode<TKey> root){
+    private AVLNode<TKey> Max_Value_Node(AVLNode<TKey> root){
         if(root.RChild == null) return root;
         return Max_Value_Node(root.RChild);
     }
-    private ABBNode<TKey> Min_Value_Node(ABBNode<TKey> root){
+    private AVLNode<TKey> Min_Value_Node(AVLNode<TKey> root){
         if(root.LChild == null) return root;
         return Min_Value_Node(root.LChild);
     }
     public bool Remove_Node(TKey key) => Remove_Node(key, Root);
 
-    private bool Remove_Node(TKey key, ABBNode<TKey> root){   // ME QUEDE TRABAJANDO AQUI
+    private bool Remove_Node(TKey key, AVLNode<TKey> root){   // ME QUEDE TRABAJANDO AQUI
         //This is a simplistic delete implementation, 
         //it could improve knowing the levels and the number of children of each node
         var node = Find_Node(key, root);
@@ -115,75 +115,8 @@ public class BinaryTree<TKey> where TKey : IComparable<TKey>{
             return true;
         }
     } 
-
-    #region REMOVE_TEST
-     /* 
-    private ABBNode<TKey> Remove_Node(TKey key,ABBNode<TKey> node)
-        {
-            if (node == null) return null;
-            
-            if (key.CompareTo(node.Key) < 0)
-            {
-                if (node.LChild == null) return node;
-                
-                node.LChild = Remove_Node(key, node.LChild);
-            }
-            else if (key.CompareTo(node.Key) > 0)
-            {
-                if (node.RChild == null) return node;
-                
-                node.RChild = Remove_Node(key, node.RChild);
-            }
-            else if (key.CompareTo(node.Key) == 0)
-            {
-                var findNode = Remove_Node(key,node.LChild);
-
-                node = Move(node, findNode);
-            }
-            
-
-            return node;
-        }
-    private ABBNode<TKey> Move(ABBNode<TKey> node, ABBNode<TKey> findNode)
-        {
-            ABBNode<TKey> moveNode;
-
-            if (findNode != null)
-            {
-                if (findNode.RChild != null)
-                {
-                    moveNode = findNode.RChild;
-
-                    findNode.RChild = null;
-                }
-                else
-                {
-                    findNode.LChild = null;
-
-                    moveNode = findNode;
-                }
-                
-                if (node.LChild != moveNode) moveNode.LChild = node.LChild;
-
-                if (node.RChild != moveNode) moveNode.RChild = node.RChild;
-            }
-            else
-            {
-                moveNode = null;
-            }
-
-            node.LChild = null;
-
-            node.RChild = null;
-
-            node.Key = default(TKey);
-
-            return moveNode;
-        }
-     */
-    #endregion //ENDTEST
     public void Print() => Print(Root);
-    private void Print(ABBNode<TKey>  root, string textFormat = "0", int spacing = 2, int topMargin = 0, int leftMargin = 1)
+    private void Print(AVLNode<TKey>  root, string textFormat = "0", int spacing = 2, int topMargin = 0, int leftMargin = 1)
     {
         if (root == null) return;
         int rootTop = Console.CursorTop + topMargin;

@@ -1,12 +1,12 @@
-﻿namespace BinaryTree;
+﻿namespace AVLTree;
 class Program
 {
     public static void Main(string[] args)
     {
         Console.Clear();
 
-        var test2 = new ABBNode<int>(20, null);
-        var binary = new BinaryTree<int>(test2);
+        var test2 = new AVLNode<int>(20, null);
+        var binary = new AVLTree<int>(test2);
         binary.Insert(15);
         binary.Insert(30);
         binary.Insert(10);
