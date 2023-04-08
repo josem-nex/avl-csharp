@@ -1,4 +1,3 @@
-# Binary_search_tree_csharp
-Different operations on a binary search tree: insertion, deletion, search, printing, minimum and maximum.
-Dotnet version 7.0.
-# AVL_csharp
+# Árbol Binario de Búsqueda Balanceado (AVL) _csharp
+        Diferentes operaciones sobre un árbol binario de búsqueda balanceado en csharp
+    tales como inserción, búsqueda, eliminación, rotación. 
