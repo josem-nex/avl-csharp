@@ -10,6 +10,8 @@ public class AVLNode<TKey> where TKey : IComparable<TKey>
         _height = int.MinValue;
     }
     public TKey Key { get; internal set; }
+    //arreglar las propiedades y los constructores teniendo en cuenta esta propiedad
+    public AVLNode<TKey> Parent {get; internal set; }
     public AVLNode<TKey> RChild { get; internal set; }
     public AVLNode<TKey> LChild { get; internal set; }
     private int _height;
