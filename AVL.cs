@@ -96,7 +96,7 @@ public class AVL<TKey> : IBinaryTree<TKey> where TKey : IComparable<TKey>
         }
     }
     public void RebalanceNode(AVLNode<TKey> node, AVLNode<TKey> posD){
-        var parent = Father(node);
+        var parent = node.Parent;
         if(node.Balance>=-1 && node.Balance <= 1) return;
         else if(node.Balance>1){
             if(node.RChild.Balance>=1) parent.RChild =node.RotateLeft();
@@ -114,40 +114,18 @@ public class AVL<TKey> : IBinaryTree<TKey> where TKey : IComparable<TKey>
             }
         }
     }
-    public AVLNode<TKey> Father(AVLNode<TKey> node){
-        AVLNode<TKey> parent = null;
-        var key = node.Key;    
-        AVLNode<TKey> nodeC = Root;
-        while (nodeC is not null)
-        {
-            var compare = key.CompareTo(nodeC.Key);
-            if (compare == 0) break;
-            else if (compare < 0)
-            {
-                parent = nodeC;
-                nodeC = nodeC.LChild;
-            }
-            else
-            {
-                parent = nodeC;
-                nodeC = nodeC.RChild;
-            }
-        }
-        return parent;
-    }
     public bool Insert(TKey key)
     {
         var node = new AVLNode<TKey>(key);
         var act = Insert(node);
-        if(act is null) return false;
-        var parent = Father(act);
-        if((act.Balance != 0)&&(act!= Root)&&(parent.Balance!=0)){
-            Console.Clear();
-            System.Console.WriteLine(parent.Key+ "|" + parent.Balance + "____"+ act.Key+"|"+act.Balance);
-            Print(Root);
-            RebalanceNode(parent, act);
-        }
-        return true;
+        // var parent = Father(act);
+        // if((act.Balance != 0)&&(act!= Root)&&(parent.Balance!=0)){
+        //     Console.Clear();
+        //     System.Console.WriteLine(parent.Key+ "|" + parent.Balance + "____"+ act.Key+"|"+act.Balance);
+        //     Print(Root);
+        //     RebalanceNode(parent, act);
+        // }
+        return (act is not null);
     }
     internal AVLNode<TKey> Insert(AVLNode<TKey> node)
     {
@@ -170,6 +148,7 @@ public class AVL<TKey> : IBinaryTree<TKey> where TKey : IComparable<TKey>
                     else
                     {
                         act.LChild = node;
+                        act.LChild.Parent = act;
                         break;
                     }
                 }
@@ -179,6 +158,7 @@ public class AVL<TKey> : IBinaryTree<TKey> where TKey : IComparable<TKey>
                     else
                     {
                         act.RChild = node;
+                        act.RChild.Parent = act;
                         break;
                     }
                 }

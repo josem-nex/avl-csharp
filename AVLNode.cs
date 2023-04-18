@@ -8,6 +8,7 @@ public class AVLNode<TKey> where TKey : IComparable<TKey>
         RChild = null;
         LChild = null;
         _height = int.MinValue;
+        Parent = null;
     }
     public TKey Key { get; internal set; }
     //arreglar las propiedades y los constructores teniendo en cuenta esta propiedad
@@ -47,8 +48,13 @@ public class AVLNode<TKey> where TKey : IComparable<TKey>
     internal AVLNode<TKey> RotateLeft()
     {
         AVLNode<TKey> pivote = this.RChild;
-        this.RChild = pivote.LChild;
+        if (pivote.LChild is not null)
+        {
+            this.RChild = pivote.LChild;
+            this.RChild.Parent = this;
+        }
         pivote.LChild = this;
+        this.Parent = pivote;
         //arreglar altura
         pivote.ResetHeight();
         this.ResetHeight();
@@ -71,8 +77,12 @@ public class AVLNode<TKey> where TKey : IComparable<TKey>
     internal AVLNode<TKey> RotateRight()
     {
         AVLNode<TKey> pivote = this.LChild;
-        if(!(pivote.RChild is null)) this.LChild = pivote.RChild;
+        if(pivote.RChild is not null) {
+            this.LChild = pivote.RChild;
+            this.LChild.Parent = this;
+            }
         pivote.RChild = this;
+        this.Parent = pivote;
         //arreglar altura
         pivote.ResetHeight();
         this.ResetHeight();

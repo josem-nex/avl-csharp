@@ -22,12 +22,12 @@ class Program
         binary.Insert(25);
         binary.Insert(29);
         // binary.Print();
-
+        System.Console.WriteLine();
         binary.Insert(37);
         binary.Insert(45);
         binary.Insert(49);
         binary.Print();
-        binary.Insert(47);
+        binary.Insert(48);
 
         // binary.Insert(59);
 
