@@ -7,5 +7,5 @@ class Program
         var binary = new AVL<int>();
         // Add some nodes and test the tree
     }
-    
+
 }

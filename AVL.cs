@@ -3,12 +3,13 @@ namespace BinaryTree;
 public class AVL<TKey> : IBinaryTree<TKey> where TKey : IComparable<TKey>
 {
     public AVLNode<TKey> Root;
-    public AVL(){}
+    public AVL() { }
     public AVL(AVLNode<TKey> root)
     {
         Root = root;
     }
-
+    /// <summary>Recorre el árbol para verificar todos los balances y las propiedades del ABB.</summary>
+    /// <returns>True si el árbol es un AVL válido, False en caso contrario.</returns>
     public bool AssertValidTree()
     {
         if (this.Root != null)
@@ -21,12 +22,15 @@ public class AVL<TKey> : IBinaryTree<TKey> where TKey : IComparable<TKey>
                 node.ResetHeight();
                 if (node.Balance < -1 || node.Balance > 1)
                     throw new Exception("InvalidTree");
-                
+
                 previousNode = node;
             }
         }
         return true;
     }
+    /// <summary>Busca un nodo en el árbol.</summary>
+    /// <param name="key">La llave del nodo a buscar.</param>
+    /// <returns>El nodo con la llave dada, null si no existe.</returns>
     public AVLNode<TKey> Find_Node(TKey key) => Find_Node(key, Root);
     internal AVLNode<TKey> Find_Node(TKey key, AVLNode<TKey> node)
     {
@@ -56,28 +60,14 @@ public class AVL<TKey> : IBinaryTree<TKey> where TKey : IComparable<TKey>
         if (root.LChild == null) return root;
         return Min_Value_Node(root.LChild);
     }
+    /// <summary>Verifica si un nodo pertenece al árbol.</summary>
+    /// <param name="key">La llave del nodo a buscar.</param>
+    /// <returns>True si el nodo existe, False en caso contrario.</returns>
     public bool Contains(TKey key) => !(Find_Node(key) is null);
-
-    public IEnumerable<TKey> InOrder()
+    /// <summary>Recorrido inOrder en el árbol.</summary>
+    /// <returns>Un IEnumerable de AVLNode ordenado por los TKey.</returns>
+    public IEnumerable<AVLNode<TKey>> InOrder()
     {
-        AVLNode<TKey> current = this.Root;
-        Stack<AVLNode<TKey>> parentStack = new Stack<AVLNode<TKey>>();
-        while (current != null || parentStack.Count != 0)
-        {
-            if (current != null)
-            {
-                parentStack.Push(current);
-                current = current.LChild;
-            }
-            else
-            {
-                current = parentStack.Pop();
-                yield return current.Key;
-                current = current.RChild;
-            }
-        }
-    }
-    public IEnumerable<AVLNode<TKey>> InOrderNode(){
         AVLNode<TKey> current = this.Root;
         Stack<AVLNode<TKey>> parentStack = new Stack<AVLNode<TKey>>();
         while (current != null || parentStack.Count != 0)
@@ -95,40 +85,57 @@ public class AVL<TKey> : IBinaryTree<TKey> where TKey : IComparable<TKey>
             }
         }
     }
-    public AVLNode<TKey> RebalanceNode(AVLNode<TKey> node){
+    /// <summary>Verifica si un nodo está banceado y hace las rotaciones necesarias en caso de no estarlo.</summary>
+    /// <param name="node">El nodo a verificar.</param>
+    /// <returns>El nuevo nodo balanceado.</returns>
+    public AVLNode<TKey> RebalanceNode(AVLNode<TKey> node)
+    {
         var parent = node.Parent;
         AVLNode<TKey> rotate = null;
-        if(node.Balance>=-1 && node.Balance <= 1) return null;
-        else if(node.Balance>1){
-            if(node.RChild.Balance>=1){     
-                rotate =node.RotateLeft();
-                if(parent is not null){
-                    if(parent.LChild == node) parent.LChild = rotate;
-                    else parent.RChild = rotate;
-                }else
-                {
-                    Root = rotate;
-                    Root.Parent = null;
-                }
-            }else{
-                node.RChild = node.RChild.RotateRight();
+        if (node.Balance >= -1 && node.Balance <= 1) return null;
+        else if (node.Balance > 1)
+        {
+            if (node.RChild.Balance >= 1)
+            {
                 rotate = node.RotateLeft();
-                if(parent is not null){
-                    if(parent.LChild == node) parent.LChild = rotate;
+                if (parent is not null)
+                {
+                    if (parent.LChild == node) parent.LChild = rotate;
                     else parent.RChild = rotate;
-                }else
+                }
+                else
                 {
                     Root = rotate;
                     Root.Parent = null;
                 }
             }
-        }else{
-            if(node.LChild.Balance<1){
-                rotate = node.RotateRight();
-                if(parent is not null){
-                    if(parent.LChild == node) parent.LChild = rotate;
+            else
+            {
+                node.RChild = node.RChild.RotateRight();
+                rotate = node.RotateLeft();
+                if (parent is not null)
+                {
+                    if (parent.LChild == node) parent.LChild = rotate;
                     else parent.RChild = rotate;
-                }else
+                }
+                else
+                {
+                    Root = rotate;
+                    Root.Parent = null;
+                }
+            }
+        }
+        else
+        {
+            if (node.LChild.Balance < 1)
+            {
+                rotate = node.RotateRight();
+                if (parent is not null)
+                {
+                    if (parent.LChild == node) parent.LChild = rotate;
+                    else parent.RChild = rotate;
+                }
+                else
                 {
                     Root = rotate;
                     Root.Parent = null;
@@ -138,10 +145,12 @@ public class AVL<TKey> : IBinaryTree<TKey> where TKey : IComparable<TKey>
             {
                 node.LChild = node.LChild.RotateLeft();
                 rotate = node.RotateRight();
-                if(parent is not null){
-                    if(parent.LChild == node) parent.LChild = rotate;
+                if (parent is not null)
+                {
+                    if (parent.LChild == node) parent.LChild = rotate;
                     else parent.RChild = rotate;
-                }else
+                }
+                else
                 {
                     Root = rotate;
                     Root.Parent = null;
@@ -150,25 +159,26 @@ public class AVL<TKey> : IBinaryTree<TKey> where TKey : IComparable<TKey>
         }
         return rotate;
     }
-    public void Rebalance(AVLNode<TKey> node){
-        
-    }
+    /// <summary>Inserta un nodo en el árbol.</summary>
+    /// <param name="key">La llave del nodo a insertar.</param>
+    /// <returns>True si el nodo se insertó correctamente, False en caso contrario.</returns>
     public bool Insert(TKey key)
     {
         var node = new AVLNode<TKey>(key);
         var act = Insert(node);
-        if(act is null) return false;
+        if (act is null) return false;
         var parent = act.Parent;
         if (parent is not null)
         {
             if (parent.Balance != 0)
             {
-                while(parent is not null)
+                while (parent is not null)
                 {
-                    if(parent.Balance<-1||parent.Balance>1){
+                    if (parent.Balance < -1 || parent.Balance > 1)
+                    {
                         var par = parent.Parent;
                         var y = RebalanceNode(parent);
-                        if(par is not null) y.Parent = par;
+                        if (par is not null) y.Parent = par;
                         return true;
                     }
                     parent = parent.Parent;
@@ -213,122 +223,31 @@ public class AVL<TKey> : IBinaryTree<TKey> where TKey : IComparable<TKey>
                         break;
                     }
                 }
-            } 
+            }
             return act;
         }
     }
-    public void Print() => Print(Root);
-    internal void Print(AVLNode<TKey> root, string textFormat = "0", int spacing = 2, int topMargin = 0, int leftMargin = 1)
-    {
-        if (root == null) return;
-        int rootTop = Console.CursorTop + topMargin;
-        var last = new List<NodeInfo<TKey>>();
-        var next = root;
-        for (int level = 0; next != null; level++)
-        {
-            var item = new NodeInfo<TKey>(next, next.Key.ToString());
-            // var item = new NodeInfo { Node = next, Text = next.Key.ToString(textFormat) };
-            if (level < last.Count)
-            {
-                item.StartPos = last[level].EndPos + spacing;
-                last[level] = item;
-            }
-            else
-            {
-                item.StartPos = leftMargin;
-                last.Add(item);
-            }
-            if (level > 0)
-            {
-                item.Parent = last[level - 1];
-                if (next == item.Parent.Node.LChild)
-                {
-                    item.Parent.Left = item;
-                    item.EndPos = Math.Max(item.EndPos, item.Parent.StartPos - 1);
-                }
-                else
-                {
-                    item.Parent.Right = item;
-                    item.StartPos = Math.Max(item.StartPos, item.Parent.EndPos + 1);
-                }
-            }
-            next = next.LChild ?? next.RChild;
-            for (; next == null; item = item.Parent)
-            {
-                int top = rootTop + 2 * level;
-                Prints(item.Text, top, item.StartPos);
-                if (item.Left != null)
-                {
-                    Prints("/", top + 1, item.Left.EndPos);
-                    Prints("_", top, item.Left.EndPos + 1, item.StartPos);
-                }
-                if (item.Right != null)
-                {
-                    Prints("_", top, item.EndPos, item.Right.StartPos - 1);
-                    Prints("\\", top + 1, item.Right.StartPos - 1);
-                }
-                if (--level < 0) break;
-                if (item == item.Parent.Left)
-                {
-                    item.Parent.StartPos = item.EndPos + 1;
-                    next = item.Parent.Node.RChild;
-                }
-                else
-                {
-                    if (item.Parent.Left == null)
-                        item.Parent.EndPos = item.StartPos - 1;
-                    else
-                        item.Parent.StartPos += (item.StartPos - 1 - item.Parent.EndPos) / 2;
-                }
-            }
-        }
-        Console.SetCursorPosition(0, rootTop + 2 * last.Count - 1);
-    }
-    internal void Prints(string s, int top, int left, int right = -1)
-    {
-        Console.SetCursorPosition(left, top);
-        if (right < 0) right = left + s.Length;
-        while (Console.CursorLeft < right) Console.Write(s);
-    }
-    /* public bool Remove(TKey key)
+    /// <summary>Elimina un nodo del árbol.</summary>
+    /// <param name="key">La llave del nodo a eliminar.</param>
+    /// <returns>True si el nodo se eliminó correctamente, False en caso contrario.</returns>
+    public bool Remove(TKey key)
     {
         var node = Find_Node(key);
-        if(node is null) return false;
+        if (node is null) return false;
         var parent = node.Parent;
-        if(parent is null){
-            Root = null;
-            return true;
-        }
-        if (parent.Balance != 0)
+        if (parent is null)
         {
-            while(parent is not null)
-            {
-                if(parent.Balance <-1||parent.Balance >1){
-                    var par = parent.Parent;
-                    var y = RebalanceNode(parent);
-                    if(par is not null) y.Parent = par;
-                    return true;
-                }
-                parent = parent.Parent;
-            }
-        }
-
-    } */
-    public bool Remove(TKey key) {
-        var node = Find_Node(key);
-        if(node is null) return false;
-        var parent = node.Parent;
-        if(parent is null){
             Root = null;
             return true;
         }
         Remove(key, Root);
-        while(parent is not null)
+        while (parent is not null)
         {
-            if(parent.Balance <-1||parent.Balance >1){
+            if (parent.Balance < -1 || parent.Balance > 1)
+            {
                 var par = parent.Parent;
                 var y = RebalanceNode(parent);
-                if(par is not null) y.Parent = par;
+                if (par is not null) y.Parent = par;
                 return true;
             }
             parent = parent.Parent;
@@ -420,5 +339,81 @@ public class AVL<TKey> : IBinaryTree<TKey> where TKey : IComparable<TKey>
             Remove(temp);
             node.Key = temp;
         }
+    }
+    /// <summary>Dibuja el árbol en consola.</summary>
+
+    public void Print() => Print(Root);
+
+    internal void Print(AVLNode<TKey> root, string textFormat = "0", int spacing = 2, int topMargin = 0, int leftMargin = 1)
+    {
+        if (root == null) return;
+        int rootTop = Console.CursorTop + topMargin;
+        var last = new List<NodeInfo<TKey>>();
+        var next = root;
+        for (int level = 0; next != null; level++)
+        {
+            var item = new NodeInfo<TKey>(next, next.Key.ToString());
+            // var item = new NodeInfo { Node = next, Text = next.Key.ToString(textFormat) };
+            if (level < last.Count)
+            {
+                item.StartPos = last[level].EndPos + spacing;
+                last[level] = item;
+            }
+            else
+            {
+                item.StartPos = leftMargin;
+                last.Add(item);
+            }
+            if (level > 0)
+            {
+                item.Parent = last[level - 1];
+                if (next == item.Parent.Node.LChild)
+                {
+                    item.Parent.Left = item;
+                    item.EndPos = Math.Max(item.EndPos, item.Parent.StartPos - 1);
+                }
+                else
+                {
+                    item.Parent.Right = item;
+                    item.StartPos = Math.Max(item.StartPos, item.Parent.EndPos + 1);
+                }
+            }
+            next = next.LChild ?? next.RChild;
+            for (; next == null; item = item.Parent)
+            {
+                int top = rootTop + 2 * level;
+                Prints(item.Text, top, item.StartPos);
+                if (item.Left != null)
+                {
+                    Prints("/", top + 1, item.Left.EndPos);
+                    Prints("_", top, item.Left.EndPos + 1, item.StartPos);
+                }
+                if (item.Right != null)
+                {
+                    Prints("_", top, item.EndPos, item.Right.StartPos - 1);
+                    Prints("\\", top + 1, item.Right.StartPos - 1);
+                }
+                if (--level < 0) break;
+                if (item == item.Parent.Left)
+                {
+                    item.Parent.StartPos = item.EndPos + 1;
+                    next = item.Parent.Node.RChild;
+                }
+                else
+                {
+                    if (item.Parent.Left == null)
+                        item.Parent.EndPos = item.StartPos - 1;
+                    else
+                        item.Parent.StartPos += (item.StartPos - 1 - item.Parent.EndPos) / 2;
+                }
+            }
+        }
+        Console.SetCursorPosition(0, rootTop + 2 * last.Count - 1);
+    }
+    internal void Prints(string s, int top, int left, int right = -1)
+    {
+        Console.SetCursorPosition(left, top);
+        if (right < 0) right = left + s.Length;
+        while (Console.CursorLeft < right) Console.Write(s);
     }
 }

@@ -10,9 +10,13 @@ public class AVLNode<TKey> where TKey : IComparable<TKey>
         _height = int.MinValue;
         Parent = null;
     }
+    /// <summary>Value del nodo, debe ser un valor IComparable.</summary>
     public TKey Key { get; internal set; }
-    public AVLNode<TKey> Parent {get; internal set; }
+    /// <summary>El padre del nodo.</summary>
+    public AVLNode<TKey> Parent { get; internal set; }
+    /// <summary>El hijo derecho del nodo.</summary>
     public AVLNode<TKey> RChild { get; internal set; }
+    /// <summary>El hijo izquierdo del nodo.</summary>
     public AVLNode<TKey> LChild { get; internal set; }
     private int _height;
     /// <summary>Altura del árbol.</summary>
@@ -44,13 +48,6 @@ public class AVLNode<TKey> where TKey : IComparable<TKey>
     /// Rota el árbol en contra de las manecillas del reloj.
     /// </summary>
     /// <returns>La nueva raíz del árbol.</returns>
-     // 
-    //        R                                        B
-    //       / \                                      / \
-    //          B                                    R   F
-    //            \                                 
-    //             F                               
-    //   
     internal AVLNode<TKey> RotateLeft()
     {
         AVLNode<TKey> pivote = this.RChild;
@@ -58,7 +55,8 @@ public class AVLNode<TKey> where TKey : IComparable<TKey>
         {
             this.RChild = pivote.LChild;
             this.RChild.Parent = this;
-        }else
+        }
+        else
         {
             this.RChild = null;
         }
@@ -90,10 +88,11 @@ public class AVLNode<TKey> where TKey : IComparable<TKey>
     internal AVLNode<TKey> RotateRight()
     {
         AVLNode<TKey> pivote = this.LChild;
-        if(pivote.RChild is not null) {
+        if (pivote.RChild is not null)
+        {
             this.LChild = pivote.RChild;
             this.LChild.Parent = this;
-            }
+        }
         else
         {
             this.LChild = null;
@@ -109,20 +108,21 @@ public class AVLNode<TKey> where TKey : IComparable<TKey>
         this.ResetHeight();
         return pivote;
     }
-    /// <summary>Devuelve la altura de un nodo, -1 si es null, sino la altura de ese nodo.</summary>
+    /// <returns>La altura de un nodo, -1 si es null.</returns>
     private int GetChildHeight(AVLNode<TKey> node) => (node is null) ? -1 : node.Height;
-    /// <summary>Devuelve la altura del nodo actual calculada como Max(Hijoizq,Hijoder)+1.</summary>
+    /// <returns>La altura del nodo actual calculada como Max(Hijoizq,Hijoder)+1.</returns>
     internal int GetHeight() => (System.Math.Max(GetChildHeight(this.LChild), GetChildHeight(this.RChild)) + 1);
-    /// <summary>
-    /// Devuelve el balance del nodo calculado como la altura del nodo izquierdo - altura del nodo derecho.
-    /// </summary>
+    /// <returns>
+    /// El balance del nodo calculado como la altura del nodo izquierdo - altura del nodo derecho.
+    /// </returns>
     internal int GetBalance() => (GetChildHeight(this.RChild) - GetChildHeight(this.LChild));
     /// <summary>Resetea el valor de la altura. En la próxima operación habrá que recalcularlo.</summary>
     internal void ResetHeight()
     {
         this._height = int.MinValue;
     }
-    /// <summary>Retorna verdadero si el nodo es hoja. Falso en caso contrario.</summary>
+    /// <summary>Verifica si un nodo es hoja o no.</summary>
+    /// <returns>Verdadero si el nodo es hoja, falso en caso contrario.</returns>
     internal bool IsLeaf
     {
         get
@@ -131,8 +131,8 @@ public class AVLNode<TKey> where TKey : IComparable<TKey>
             else return false;
         }
     }
-    /// <summary>Retorna verdadero si el nodo solo tiene hijo izquierdo. 
-    /// Falso en caso contrario.</summary>
+    /// <summary>Verifica si el nodo solo tiene hijo izquierdo.</summary>
+    /// <returns>Verdadero si el nodo solo tiene hijo izquierdo, falso en caso contrario.</returns>
     internal bool OnlyLeftSon
     {
         get
@@ -141,8 +141,8 @@ public class AVLNode<TKey> where TKey : IComparable<TKey>
             else return false;
         }
     }
-    /// <summary>Retorna verdadero si el nodo solo tiene hijo derecho. 
-    /// Falso en caso contrario.</summary>
+    /// <summary>Verifica si el nodo solo tiene hijo derecho.</summary>
+    /// <returns>Verdadero si el nodo solo tiene hijo derecho, falso en caso contrario.</returns>
     internal bool OnlyRightSon
     {
         get
