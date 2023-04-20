@@ -155,7 +155,6 @@ public class AVL<TKey> : IBinaryTree<TKey> where TKey : IComparable<TKey>
     }
     public bool Insert(TKey key)
     {
-
         var node = new AVLNode<TKey>(key);
         var act = Insert(node);
         if(act is null) return false;
@@ -291,9 +290,135 @@ public class AVL<TKey> : IBinaryTree<TKey> where TKey : IComparable<TKey>
         if (right < 0) right = left + s.Length;
         while (Console.CursorLeft < right) Console.Write(s);
     }
-
-    public bool Remove(TKey key)
+    /* public bool Remove(TKey key)
     {
-        throw new NotImplementedException();
+        var node = Find_Node(key);
+        if(node is null) return false;
+        var parent = node.Parent;
+        if(parent is null){
+            Root = null;
+            return true;
+        }
+        if (parent.Balance != 0)
+        {
+            while(parent is not null)
+            {
+                if(parent.Balance <-1||parent.Balance >1){
+                    var par = parent.Parent;
+                    var y = RebalanceNode(parent);
+                    if(par is not null) y.Parent = par;
+                    return true;
+                }
+                parent = parent.Parent;
+            }
+        }
+
+    } */
+    public bool Remove(TKey key) {
+        var node = Find_Node(key);
+        if(node is null) return false;
+        var parent = node.Parent;
+        if(parent is null){
+            Root = null;
+            return true;
+        }
+        Remove(key, Root);
+        while(parent is not null)
+        {
+            if(parent.Balance <-1||parent.Balance >1){
+                var par = parent.Parent;
+                var y = RebalanceNode(parent);
+                if(par is not null) y.Parent = par;
+                return true;
+            }
+            parent = parent.Parent;
+        }
+        return true;
+    }
+    private bool Remove(TKey key, AVLNode<TKey> root)
+    {
+        bool result = true;
+        AVLNode<TKey> parent = null;
+        AVLNode<TKey> nodeToElmininate = root;
+        while (nodeToElmininate is not null)
+        {
+            var compare = key.CompareTo(nodeToElmininate.Key);
+            if (compare == 0) break;
+            else if (compare < 0)
+            {
+                parent = nodeToElmininate;
+                nodeToElmininate = nodeToElmininate.LChild;
+            }
+            else
+            {
+                parent = nodeToElmininate;
+                nodeToElmininate = nodeToElmininate.RChild;
+            }
+        }
+        if (nodeToElmininate is null) result = false;
+        else Remove_Node(nodeToElmininate, parent);
+        return result;
+    }
+    private void Remove_Node(AVLNode<TKey> node, AVLNode<TKey> parent)
+    {
+        if (parent is null)
+        {
+            if (node.IsLeaf) node = null;
+            else if (node.OnlyLeftSon)
+            {
+                Root = node.LChild;
+            }
+            else if (node.OnlyRightSon)
+            {
+                Root = node.RChild;
+            }
+            else
+            {
+                AVLNode<TKey> swapNode = Max_Value_Node(node.LChild);
+                TKey temp = swapNode.Key;
+                Remove(temp);
+                Root.Key = temp;
+            }
+        }
+        else if (node.IsLeaf)
+        {
+            if (node.Key.CompareTo(parent.Key) < 0)
+            {
+                parent.LChild = null;
+            }
+            else
+            {
+                parent.RChild = null;
+            }
+        }
+        else if (node.OnlyLeftSon)
+        {
+            if (node.Key.CompareTo(parent.Key) < 0)
+            {
+                parent.LChild = node.LChild;
+            }
+            else
+            {
+                parent.RChild = node.LChild;
+            }
+        }
+        else if (node.OnlyRightSon)
+        {
+            if (node.Key.CompareTo(parent.Key) < 0)
+            {
+                parent.LChild = node.RChild;
+            }
+            else
+            {
+                parent.RChild = node.RChild;
+            }
+        }
+        else
+        {
+            var swapNode = Max_Value_Node(node.LChild);
+            var temp = swapNode.Key;
+            Remove(temp);
+            node.Key = temp;
+        }
     }
 }
