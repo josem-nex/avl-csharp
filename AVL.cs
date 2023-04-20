@@ -66,7 +66,7 @@ public class AVL<TKey> : IBinaryTree<TKey> where TKey : IComparable<TKey>
     public bool Contains(TKey key) => !(Find_Node(key) is null);
     /// <summary>Recorrido inOrder en el árbol.</summary>
     /// <returns>Un IEnumerable de AVLNode ordenado por los TKey.</returns>
-    public IEnumerable<AVLNode<TKey>> InOrder()
+    public IEnumerable<AVLNode<TKey>> InOrderNode()
     {
         AVLNode<TKey> current = this.Root;
         Stack<AVLNode<TKey>> parentStack = new Stack<AVLNode<TKey>>();

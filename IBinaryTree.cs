@@ -5,7 +5,6 @@ namespace BinaryTree;
 
 public interface IBinaryTree<TKey> where TKey : IComparable<TKey>
 {
-    IEnumerable<TKey> InOrder();
     bool Insert(TKey key);
     bool Contains(TKey key);
     void Print();
