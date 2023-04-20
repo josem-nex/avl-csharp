@@ -5,38 +5,33 @@ class Program
     {
         Console.Clear();
 
-        var binary = new AVL<int>();
-        binary.Insert(20);
-        binary.Insert(15);
-        binary.Insert(30);
-        binary.Insert(10);
-        binary.Insert(18);
-        binary.Insert(27);
-        // binary.Print();
-
-        binary.Insert(40);
-        binary.Insert(8);
-        binary.Insert(12);
-        binary.Insert(17);
-        binary.Insert(19);
-        binary.Insert(25);
-        binary.Insert(29);
-        // binary.Print();
+        // var binary = new AVL<int>();
+        var x = new Random();
+        int count = 0;
+        for (int j = 0; j < 50; j++)
+        {
+            var binary = new AVL<int>();
+            for (int i = 0; i < 150; i++)
+            {
+                int w = x.Next(0, 200);
+                // System.Console.WriteLine("Valor a insertar: "+ w);
+                binary.Insert(w);
+            }
+            if(binary.AssertValidTree()) {
+                System.Console.WriteLine("SIUU");
+                count++;
+            }
+            System.Console.WriteLine();
+            foreach (var item in binary.InOrder())
+            {
+                System.Console.Write(item+"|");
+            }
+            System.Console.WriteLine();
+        }
+        
         System.Console.WriteLine();
-        binary.Insert(37);
-        binary.Insert(45);
-        binary.Insert(49);
-        binary.Print();
-        binary.Insert(48);
+        System.Console.WriteLine("Árboles válidos: "+ count); 
 
-        // binary.Insert(59);
-
-
-
-
-        binary.Print();
-
-        System.Console.WriteLine(binary.AssertValidTree());
     }
     
 }

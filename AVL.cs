@@ -95,43 +95,95 @@ public class AVL<TKey> : IBinaryTree<TKey> where TKey : IComparable<TKey>
             }
         }
     }
-    public void RebalanceNode(AVLNode<TKey> node, AVLNode<TKey> posD){
+    public AVLNode<TKey> RebalanceNode(AVLNode<TKey> node){
         var parent = node.Parent;
-        if(node.Balance>=-1 && node.Balance <= 1) return;
+        AVLNode<TKey> rotate = null;
+        if(node.Balance>=-1 && node.Balance <= 1) return null;
         else if(node.Balance>1){
-            if(node.RChild.Balance>=1) parent.RChild =node.RotateLeft();
-            else{
-                // System.Console.WriteLine("aaaaaaaaaaaaa");
-                node.RChild = posD.RotateRight();
-                parent.RChild = node.RotateLeft();
+            if(node.RChild.Balance>=1){     
+                rotate =node.RotateLeft();
+                if(parent is not null){
+                    if(parent.LChild == node) parent.LChild = rotate;
+                    else parent.RChild = rotate;
+                }else
+                {
+                    Root = rotate;
+                    Root.Parent = null;
+                }
+            }else{
+                node.RChild = node.RChild.RotateRight();
+                rotate = node.RotateLeft();
+                if(parent is not null){
+                    if(parent.LChild == node) parent.LChild = rotate;
+                    else parent.RChild = rotate;
+                }else
+                {
+                    Root = rotate;
+                    Root.Parent = null;
+                }
             }
         }else{
-            if(node.LChild.Balance<=1) parent.LChild= node.RotateRight();
+            if(node.LChild.Balance<1){
+                rotate = node.RotateRight();
+                if(parent is not null){
+                    if(parent.LChild == node) parent.LChild = rotate;
+                    else parent.RChild = rotate;
+                }else
+                {
+                    Root = rotate;
+                    Root.Parent = null;
+                }
+            }
             else
             {
                 node.LChild = node.LChild.RotateLeft();
-                parent.LChild = node.RotateRight();
+                rotate = node.RotateRight();
+                if(parent is not null){
+                    if(parent.LChild == node) parent.LChild = rotate;
+                    else parent.RChild = rotate;
+                }else
+                {
+                    Root = rotate;
+                    Root.Parent = null;
+                }
             }
         }
+        return rotate;
+    }
+    public void Rebalance(AVLNode<TKey> node){
+        
     }
     public bool Insert(TKey key)
     {
+
         var node = new AVLNode<TKey>(key);
         var act = Insert(node);
-        // var parent = Father(act);
-        // if((act.Balance != 0)&&(act!= Root)&&(parent.Balance!=0)){
-        //     Console.Clear();
-        //     System.Console.WriteLine(parent.Key+ "|" + parent.Balance + "____"+ act.Key+"|"+act.Balance);
-        //     Print(Root);
-        //     RebalanceNode(parent, act);
-        // }
-        return (act is not null);
+        if(act is null) return false;
+        var parent = act.Parent;
+        if (parent is not null)
+        {
+            if (parent.Balance != 0)
+            {
+                while(parent is not null)
+                {
+                    if(parent.Balance<-1||parent.Balance>1){
+                        var par = parent.Parent;
+                        var y = RebalanceNode(parent);
+                        if(par is not null) y.Parent = par;
+                        return true;
+                    }
+                    parent = parent.Parent;
+                }
+            }
+        }
+        return true;
     }
     internal AVLNode<TKey> Insert(AVLNode<TKey> node)
     {
         if (Root is null)
         {
             Root = node;
+            Root.Parent = null;
             return Root;
         }
         else
@@ -147,8 +199,8 @@ public class AVL<TKey> : IBinaryTree<TKey> where TKey : IComparable<TKey>
                     if (act.LChild is not null) act = act.LChild;
                     else
                     {
+                        node.Parent = act;
                         act.LChild = node;
-                        act.LChild.Parent = act;
                         break;
                     }
                 }
@@ -157,8 +209,8 @@ public class AVL<TKey> : IBinaryTree<TKey> where TKey : IComparable<TKey>
                     if (act.RChild is not null) act = act.RChild;
                     else
                     {
+                        node.Parent = act;
                         act.RChild = node;
-                        act.RChild.Parent = act;
                         break;
                     }
                 }
